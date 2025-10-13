@@ -1,0 +1,17 @@
+{
+  "pythonVersion": "3.10",
+  "typeCheckingMode": "strict",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "reportImportCycles": "error",
+  "reportUnusedImport": "error",
+  "reportUnusedClass": "error",
+  "reportUnusedFunction": "error",
+  "reportUnusedVariable": "error",
+  "reportDuplicateImport": "error",
+  "strictListInference": true,
+  "strictDictionaryInference": true,
+  "strictParameterNoneValue": true,
+  "strictSetInference": true
+}
+

@@ -1,0 +1,55 @@
+[project]
+name = "agent-ltm"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.31.1",
+    "pydantic>=2.9.2",
+    "pydantic-settings==2.11.0",
+    "python-dotenv>=1.0.1",
+    "langgraph>=0.2.45",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.2",
+    "langchain-postgres>=0.0.10",
+    "psycopg[binary]>=3.2.3",
+    "pgvector>=0.2.5",
+    "sentence-transformers>=2.2.0",
+    "langmem>=0.0.29",
+    "langgraph-checkpoint-postgres>=2.0.25",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.4.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app", "ltm"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.14.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+exclude = [".git", ".venv", "__pycache__", "*.egg-info", ".pytest_cache", ".ruff_cache"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B"]
+ignore = ["E501", "B008"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
