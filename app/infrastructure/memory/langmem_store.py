@@ -129,6 +129,7 @@ class LangMemStore:
             for item in search_results
         ]
 
+    # refs : https://langchain-ai.github.io/langmem/guides/extract_episodic_memories/#with-storage
     async def process_structured_conversation(
         self, user_id: str, messages: list[dict[str, str]]
     ) -> list[dict[str, Any]]:
