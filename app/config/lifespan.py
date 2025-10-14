@@ -3,7 +3,7 @@ from datetime import datetime
 
 from fastapi import FastAPI
 
-from app.infrastructure.database import close_database, initialize_database
+from app.infrastructure.database import close_database
 
 
 @asynccontextmanager
@@ -12,13 +12,16 @@ async def lifespan(app: FastAPI):
     print("API docs: http://localhost:8000/docs")
     print("ReDoc: http://localhost:8000/redoc")
     print(f"Startup time: {datetime.now().isoformat()}")
-    try:
-        await initialize_database()
-        print("Database connected successfully")
 
-    except Exception as e:
-        print(f"Initialization failed: {e}")
-        raise
+    # Alternative : auto-create via SQLAlchemy
+    # try:
+    #
+    #     await initialize_database()
+    #     print("Database connected successfully")
+    #
+    # except Exception as e:
+    #     print(f"Initialization failed: {e}")
+    #     raise
 
     yield
 
