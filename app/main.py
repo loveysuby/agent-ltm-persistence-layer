@@ -1,18 +1,16 @@
-from contextlib import asynccontextmanager
-from datetime import datetime
-
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.routes import chat, memories, structured_memories
 from app.api.schemas import APIResponse, ErrorResponse
-from app.infrastructure.database import close_database, initialize_database
+from app.config.lifespan import lifespan
 
 app = FastAPI(
     title="Agent Long-term Memory API",
-    description="LangGraph + LangMem + pgvector based Agent Long-term Memory system",
-    version="0.2.0",
+    description="Agent Long-term Memory system",
+    version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.include_router(chat.router)
@@ -26,29 +24,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("Starting Agent Long-term Memory system...")
-    print("API docs: http://localhost:8000/docs")
-    print("ReDoc: http://localhost:8000/redoc")
-    print(f"Startup time: {datetime.now().isoformat()}")
-    try:
-        await initialize_database()
-        print("Database connected successfully")
-
-    except Exception as e:
-        print(f"Initialization failed: {e}")
-        raise
-
-    yield
-
-    print("Shutting down system...")
-    try:
-        await close_database()
-        print("Database connection closed")
-    except Exception as e:
-        print(f"Cleanup failed: {e}")
 
 
 @app.get("/", response_model=APIResponse)
@@ -70,4 +45,4 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="debug", access_log=True)
