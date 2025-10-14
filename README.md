@@ -8,3 +8,4 @@ Long-term memory module for AI agents
 - [API docs](./docs/api.md)
 - [Integrations](./docs/integrations.md)
 - [Setup](./docs/setup.md)
+- [Tests](./docs/testing.md)
