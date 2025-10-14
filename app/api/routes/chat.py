@@ -17,7 +17,7 @@ class ChatRequest(BaseModel):
 
 
 class ChatResponse(BaseModel):
-    response: str
+    response: Any
     thread_id: str
 
 
