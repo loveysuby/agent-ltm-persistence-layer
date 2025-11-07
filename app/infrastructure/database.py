@@ -54,49 +54,6 @@ async def get_db_connection() -> AsyncGenerator[AsyncConnection, None]:
         yield connection
 
 
-# async def initialize_database() -> None:
-#     await db_manager.initialize()
-#     async with db_manager.get_connection() as conn:
-#         await conn.execute("""
-#             CREATE EXTENSION IF NOT EXISTS vector;
-#         """)
-#
-#         await conn.execute("""
-#             CREATE TABLE IF NOT EXISTS users (
-#                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-#                 username VARCHAR(255) UNIQUE NOT NULL,
-#                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-#             );
-#         """)
-#
-#         await conn.execute("""
-#             CREATE TABLE IF NOT EXISTS memories (
-#                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-#                 user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-#                 content TEXT NOT NULL,
-#                 memory_type VARCHAR(50) NOT NULL,
-#                 embedding VECTOR(1536),
-#                 metadata JSONB,
-#                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-#                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-#             );
-#         """)
-#
-#         await conn.execute("""
-#             CREATE INDEX IF NOT EXISTS idx_memories_embedding
-#             ON memories USING ivfflat (embedding vector_cosine_ops)
-#             WITH (lists = 100);
-#         """)
-
-#         await conn.execute("""
-#             CREATE INDEX IF NOT EXISTS idx_memories_user_type
-#             ON memories (user_id, memory_type);
-#
-#             CREATE INDEX IF NOT EXISTS idx_memories_updated_at
-#             ON memories (updated_at DESC);
-#         """)
-
-
 async def close_database() -> None:
     """데이터베이스 연결 종료"""
     await db_manager.close()
