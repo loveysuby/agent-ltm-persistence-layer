@@ -15,8 +15,8 @@ dependencies = [
     "psycopg[binary]>=3.2.3",
     "pgvector>=0.2.5",
     "sentence-transformers>=2.2.0",
-    "langmem>=0.0.29",
     "langgraph-checkpoint-postgres>=2.0.25",
+    "langchain>=0.3.27",
 ]
 
 [project.optional-dependencies]

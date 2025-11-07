@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import asyncio
 import uuid
 
 import pytest
 
 from app.core.services import AgentService
-from app.infrastructure.memory.langmem_store import LangMemStore
+from app.infrastructure.memory.memory_manager import MemoryManager
 
 
 @pytest.fixture
@@ -17,7 +16,7 @@ def test_user_id() -> str:
 class TestStructuredMemoryStore:
     @pytest.mark.asyncio
     async def test_structured_manager_initialization(self):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         assert store.store is not None
@@ -26,7 +25,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_process_structured_conversation(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         messages = [
@@ -36,13 +35,12 @@ class TestStructuredMemoryStore:
 
         extracted = await store.process_structured_conversation(user_id=test_user_id, messages=messages)
 
-
         assert isinstance(extracted, list)
         assert len(extracted) >= 0
 
     @pytest.mark.asyncio
     async def test_create_structured_memory_user_preference(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         result = await store.create_structured_memory(
@@ -58,7 +56,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_create_structured_memory_user_fact(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         result = await store.create_structured_memory(
@@ -77,7 +75,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_create_invalid_schema_type(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         result = await store.create_structured_memory(
@@ -88,7 +86,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_get_memory_by_id(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         created = await store.create_structured_memory(
@@ -107,7 +105,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_search_structured_memories(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         await store.create_structured_memory(
@@ -122,7 +120,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_search_by_schema_type(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         await store.create_structured_memory(
@@ -133,8 +131,6 @@ class TestStructuredMemoryStore:
             user_id=test_user_id, schema_type="UserFact", content={"fact_type": "hobby", "content": "Likes reading"}
         )
 
-
-
         pref_results = await store.search_structured_memories(
             user_id=test_user_id, query="preferences", schema_type="UserPreference", limit=10
         )
@@ -143,7 +139,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_get_all_structured_memories(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         await store.create_structured_memory(
@@ -157,7 +153,7 @@ class TestStructuredMemoryStore:
 
     @pytest.mark.asyncio
     async def test_user_isolation_structured_memories(self):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         user1_id = f"user1-{uuid.uuid4().hex[:8]}"
@@ -170,8 +166,6 @@ class TestStructuredMemoryStore:
         await store.create_structured_memory(
             user_id=user2_id, schema_type="UserPreference", content={"category": "ui", "preference": "light mode"}
         )
-
-
 
         user1_memories = await store.get_all_structured_memories(user_id=user1_id)
         user2_memories = await store.get_all_structured_memories(user_id=user2_id)
@@ -206,8 +200,6 @@ class TestAgentServiceWithStructuredMemory:
 
         assert "id" in created
         memory_id = created["id"]
-
-
 
         retrieved = await store.get_memory_by_id(
             user_id=test_user_id, memory_id=memory_id, namespace_type="structured_memories"

@@ -7,7 +7,7 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import create_react_agent
 
-from app.infrastructure.memory.langmem_store import LangMemStore
+from app.infrastructure.memory.memory_manager import MemoryManager
 
 
 class AgentState(TypedDict):
@@ -17,7 +17,7 @@ class AgentState(TypedDict):
     system_prompt: str
 
 
-async def load_memories_node(state: AgentState, store: LangMemStore) -> dict[str, Any]:
+async def load_memories_node(state: AgentState, store: MemoryManager) -> dict[str, Any]:
     if not state["messages"]:
         return {"memories": []}
 
@@ -40,20 +40,20 @@ async def inject_memory_context_node(state: AgentState) -> dict[str, Any]:
     return state
 
 
-async def save_memory_node(state: AgentState, store: LangMemStore) -> dict[str, Any]:
+async def save_memory_node(state: AgentState, store: MemoryManager) -> dict[str, Any]:
     messages = state["messages"]
     if len(messages) < 2:
         return {}
 
     last_two_messages = messages[-2:]
-    message_dicts = [{"role": msg.type, "content": msg.content} for msg in last_two_messages]
+    message_dicts = [{"role": msg.type, "content": str(msg.content)} for msg in last_two_messages]
 
     await store.process_conversation(user_id=state["user_id"], messages=message_dicts)
 
     return {}
 
 
-def create_memory_graph(store: LangMemStore, checkpointer: AsyncPostgresSaver, tools: list | None = None):
+def create_memory_graph(store: MemoryManager, checkpointer: AsyncPostgresSaver, tools: list[Any] | None = None):
     workflow = StateGraph(AgentState)
 
     async def load_memories(state: AgentState) -> dict[str, Any]:

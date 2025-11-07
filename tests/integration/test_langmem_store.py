@@ -4,7 +4,7 @@ import uuid
 
 import pytest
 
-from app.infrastructure.memory.langmem_store import LangMemStore
+from app.infrastructure.memory.memory_manager import MemoryManager
 
 
 @pytest.fixture
@@ -12,10 +12,10 @@ def test_user_id() -> str:
     return f"test-user-{uuid.uuid4().hex[:8]}"
 
 
-class TestLangMemStore:
+class TestMemoryManager:
     @pytest.mark.asyncio
     async def test_store_initialization(self):
-        store = LangMemStore()
+        store = MemoryManager()
 
         await store.setup()
 
@@ -24,7 +24,7 @@ class TestLangMemStore:
 
     @pytest.mark.asyncio
     async def test_process_and_search_memories(self, test_user_id: str):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         messages = [
@@ -41,7 +41,7 @@ class TestLangMemStore:
 
     @pytest.mark.asyncio
     async def test_user_isolation(self):
-        store = LangMemStore()
+        store = MemoryManager()
         await store.setup()
 
         user1_id = f"user1-{uuid.uuid4().hex[:8]}"
