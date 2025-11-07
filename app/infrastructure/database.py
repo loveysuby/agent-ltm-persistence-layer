@@ -7,13 +7,13 @@ from psycopg import AsyncConnection
 from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
 
-from app.api.dependencies import get_database_conn_string
+from app.config.settings import get_pg_store_conn_string
 
 
 class DatabaseManager:
     def __init__(self):
         self.pool: AsyncConnectionPool | None = None
-        self._connection_string: str = get_database_conn_string()
+        self._connection_string: str = get_pg_store_conn_string()
 
     async def initialize(self) -> None:
         if self.pool is None:

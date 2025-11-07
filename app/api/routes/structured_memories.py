@@ -2,90 +2,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Body, Depends
 
 from app.api.schemas import Response
-from app.core.services import AgentService
+from app.infrastructure.memory.memory_manager import MemoryManager
+from app.infrastructure.memory.standalone_structured_memory import get_memory_manager
 
-router = APIRouter(prefix="/structured-memories", tags=["structured-memories"])
-
-
-@router.post("/process")
-async def process_structured_conversation(user_id: str, messages: list[dict[str, str]]) -> Response:
-    service = AgentService(user_id=user_id)
-    store = await service.get_store()
-
-    extracted = await store.process_structured_conversation(user_id=user_id, messages=messages)
-
-    return Response(success=True, data={"user_id": user_id, "extracted_memories": extracted, "count": len(extracted)})
+router = APIRouter(prefix="/memories", tags=["memories"])
 
 
-@router.post("/create")
-async def create_structured_memory(user_id: str, schema_type: str, content: dict[str, Any]) -> Response:
-    service = AgentService(user_id=user_id)
-    store = await service.get_store()
-
-    result = await store.create_structured_memory(user_id=user_id, schema_type=schema_type, content=content)
-
-    if "error" in result:
-        return Response(success=False, error=result["error"])
-
-    return Response(success=True, data=result)
-
-
-@router.get("/{memory_id}")
-async def get_memory_by_id(
-    memory_id: str, user_id: str = Query(...), namespace_type: str = Query(default="structured_memories")
-) -> Response:
-    service = AgentService(user_id=user_id)
-    store = await service.get_store()
-
-    memory = await store.get_memory_by_id(user_id=user_id, memory_id=memory_id, namespace_type=namespace_type)
-
-    if memory is None:
-        return Response(success=False, error="Memory not found")
-
-    return Response(success=True, data=memory)
-
-
-@router.post("/search")
-async def search_structured_memories(
-    user_id: str, query: str, schema_type: str | None = None, limit: int = 10
-) -> Response:
-    service = AgentService(user_id=user_id)
-    store = await service.get_store()
-
-    memories = await store.search_structured_memories(
-        user_id=user_id, query=query, schema_type=schema_type, limit=limit
-    )
-
-    return Response(
-        success=True,
-        data={
-            "user_id": user_id,
-            "query": query,
-            "schema_type": schema_type,
-            "memories": memories,
-            "count": len(memories),
-        },
-    )
-
-
-@router.get("/")
-async def get_all_structured_memories(user_id: str = Query(...), schema_type: str | None = None) -> Response:
-    service = AgentService(user_id=user_id)
-    store = await service.get_store()
-
-    memories = await store.get_all_structured_memories(user_id=user_id, schema_type=schema_type)
-
-    return Response(
-        success=True,
-        data={"user_id": user_id, "schema_type": schema_type, "memories": memories, "count": len(memories)},
-    )
-
-
-@router.get("/schemas/list")
-async def list_available_schemas() -> Response:
+@router.get("/schemas")
+async def list_schemas() -> Response:
+    """사용 가능한 메모리 스키마 목록 조회"""
     from app.core.memory_schemas import ALL_MEMORY_SCHEMAS
 
     schemas_info = []
@@ -104,3 +32,73 @@ async def list_available_schemas() -> Response:
         schemas_info.append(schema_dict)
 
     return Response(success=True, data={"schemas": schemas_info})
+
+
+@router.get("/search")
+async def search_memories(
+    user_id: str,
+    query: str,
+    schema_type: str | None = None,
+    limit: int = 10,
+    manager: MemoryManager = Depends(get_memory_manager),
+) -> Response:
+    """쿼리로 메모리 검색"""
+    memories = await manager.search_structured_memories(
+        user_id=user_id, query=query, schema_type=schema_type, limit=limit
+    )
+
+    return Response(
+        success=True,
+        data={
+            "user_id": user_id,
+            "query": query,
+            "schema_type": schema_type,
+            "memories": memories,
+            "count": len(memories),
+        },
+    )
+
+
+@router.post("/")
+async def create_memory(
+    user_id: str,
+    schema_type: str,
+    content: dict[str, Any] = Body(...),
+    manager: MemoryManager = Depends(get_memory_manager),
+) -> Response:
+    """구조화된 메모리 생성"""
+    result = await manager.create_structured_memory(user_id=user_id, schema_type=schema_type, content=content)
+
+    if "error" in result:
+        return Response(success=False, error=result["error"])
+
+    return Response(success=True, data=result)
+
+
+@router.get("/")
+async def get_all_memories(
+    user_id: str,
+    schema_type: str | None = None,
+    manager: MemoryManager = Depends(get_memory_manager),
+) -> Response:
+    memories = await manager.get_all_structured_memories(user_id=user_id, schema_type=schema_type)
+
+    return Response(
+        success=True,
+        data={"user_id": user_id, "schema_type": schema_type, "memories": memories, "count": len(memories)},
+    )
+
+
+@router.get("/{memory_id}")
+async def get_memory(
+    memory_id: str,
+    user_id: str,
+    manager: MemoryManager = Depends(get_memory_manager),
+) -> Response:
+    """ID로 메모리 조회"""
+    memory = await manager.get_memory_by_id(user_id=user_id, memory_id=memory_id, namespace_type="structured_memories")
+
+    if memory is None:
+        return Response(success=False, error="Memory not found")
+
+    return Response(success=True, data=memory)

@@ -6,7 +6,7 @@ from typing import Any
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-from app.api.dependencies import get_database_conn_string
+from app.config.settings import get_pg_store_conn_string
 from app.core.graph import create_memory_graph
 from app.infrastructure.memory.memory_manager import MemoryManager
 
@@ -19,7 +19,7 @@ class AgentService:
         self._checkpointer_instance: AsyncPostgresSaver | None = None
         self._checkpointer_cm: AsyncPostgresSaver | None = None
         self._checkpointer_lock = asyncio.Lock()
-        self._database_url: str = get_database_conn_string()
+        self._database_url: str = get_pg_store_conn_string()
         self._closed = False
 
     async def get_store(self) -> MemoryManager:

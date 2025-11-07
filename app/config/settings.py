@@ -24,3 +24,9 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+@lru_cache(maxsize=1)
+def get_pg_store_conn_string():
+    settings = get_settings()
+    return f"postgresql://{settings.db_user}:{settings.db_password}@{settings.db_host}:{settings.db_port}/{settings.db_name}"
