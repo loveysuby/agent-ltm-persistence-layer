@@ -4,7 +4,7 @@ from typing import Any
 
 from app.config.settings import get_pg_store_conn_string
 from app.core.namespace_builder import MemoryNamespaceBuilder
-from app.core.store import get_store
+from app.infrastructure.store import get_store
 
 
 class MemoryManager:

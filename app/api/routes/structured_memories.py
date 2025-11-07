@@ -14,7 +14,7 @@ router = APIRouter(prefix="/memories", tags=["json-memories"])
 @router.get("/schemas")
 async def list_schemas() -> Response:
     """사용 가능한 메모리 스키마 목록 조회"""
-    from app.core.memory_schemas import ALL_MEMORY_SCHEMAS
+    from app.core.schemas import ALL_MEMORY_SCHEMAS
 
     schemas_info = []
     for schema in ALL_MEMORY_SCHEMAS:
