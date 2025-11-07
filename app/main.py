@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import chat, memories, structured_memories
+from app.api.routes import memories, structured_memories
 from app.api.schemas import APIResponse, ErrorResponse
 from app.config.lifespan import lifespan
 
@@ -12,8 +12,6 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
-
-app.include_router(chat.router)
 app.include_router(memories.router)
 app.include_router(structured_memories.router)
 

@@ -8,7 +8,7 @@ from app.api.schemas import Response
 from app.infrastructure.memory.memory_manager import MemoryManager
 from app.infrastructure.memory.standalone_structured_memory import get_memory_manager
 
-router = APIRouter(prefix="/memories", tags=["memories"])
+router = APIRouter(prefix="/memories", tags=["json-memories"])
 
 
 @router.get("/schemas")

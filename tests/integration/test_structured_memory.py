@@ -4,7 +4,7 @@ import uuid
 
 import pytest
 
-from app.core.services import AgentService
+from app.core.services import MemoryManager
 from app.infrastructure.memory.memory_manager import MemoryManager
 
 
@@ -182,14 +182,14 @@ class TestStructuredMemoryStore:
 class TestAgentServiceWithStructuredMemory:
     @pytest.mark.asyncio
     async def test_agent_service_get_store_with_structured_manager(self, test_user_id: str):
-        service = AgentService(user_id=test_user_id)
+        service = MemoryManager(user_id=test_user_id)
         store = await service.get_store()
 
         assert store.structured_manager is not None
 
     @pytest.mark.asyncio
     async def test_end_to_end_structured_memory_flow(self, test_user_id: str):
-        service = AgentService(user_id=test_user_id)
+        service = MemoryManager(user_id=test_user_id)
         store = await service.get_store()
 
         created = await store.create_structured_memory(

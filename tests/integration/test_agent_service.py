@@ -4,7 +4,7 @@ import uuid
 
 import pytest
 
-from app.core.services import AgentService
+from app.core.services import MemoryManager
 
 
 @pytest.fixture
@@ -19,14 +19,14 @@ def test_thread_id() -> str:
 
 @pytest.fixture
 def mock_agent_service(test_user_id: str):
-    return AgentService(user_id=test_user_id)
+    return MemoryManager(user_id=test_user_id)
 
 
 @pytest.mark.asyncio
 class TestAgentService:
     async def test_memory_store_isolation(self, test_user_id: str):
-        service1 = AgentService(user_id=test_user_id)
-        service2 = AgentService(user_id=test_user_id)
+        service1 = MemoryManager(user_id=test_user_id)
+        service2 = MemoryManager(user_id=test_user_id)
 
         store1 = await service1.get_store()
         store2 = await service2.get_store()
@@ -43,7 +43,7 @@ class TestAgentService:
 
     @pytest.mark.integration
     async def test_memory_persistence_across_threads(self, test_user_id, test_thread_id):
-        service = AgentService(user_id=test_user_id)
+        service = MemoryManager(user_id=test_user_id)
         t1, t2 = f"t1-{test_thread_id}", f"t2-{test_thread_id}"
 
         await service.chat(message="I am a software engineer", thread_id=t1)
