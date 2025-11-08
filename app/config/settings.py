@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 from functools import lru_cache
 
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    model_config = ConfigDict(extra="ignore")
+
     app_name: str = "Agent LTM API"
     app_version: str = "0.1.0"
 
@@ -16,9 +21,11 @@ class Settings(BaseSettings):
     redis_host: str = "localhost"
     redis_port: int = 6379
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    # OpenAI / Azure OpenAI 설정
+    openai_api_key: str | None = None
+    azure_openai_api_endpoint: str | None = None
+    azure_openai_api_key: str | None = None
+    azure_openai_deployment_name: str | None = None
 
 
 @lru_cache
