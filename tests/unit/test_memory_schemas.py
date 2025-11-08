@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import pytest
+from core.schemas import ConversationInsight, UserFact, UserPreference
 from pydantic import ValidationError
-
-from app.core.memory_schemas import ConversationInsight, UserFact, UserPreference
 
 
 class TestUserPreference:
