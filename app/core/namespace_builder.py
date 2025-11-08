@@ -12,10 +12,6 @@ class MemoryNamespaceBuilder:
     - memory_type: "semantic", "episodic", "procedural"
     - user_id: 사용자 ID
     - category
-        "tacit-knowledge(암묵지 - 업무 절차 관련)"
-        "user-knowledge(사용자 개인만 사용할 지식)"
-        "global(에이전트별 공통 매핑될 정보)"
-        "{custom_category}" : 사용자 정의 카테고리 (of 메소드를 통해 추가)
     """
 
     # 카테고리 상수
