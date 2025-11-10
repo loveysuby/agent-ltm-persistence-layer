@@ -73,7 +73,7 @@ Thumbs.db
 *.http
 requirements.txt
 uv.lock
-
+.cursorrules
 
 # Troubleshooting log
 docs/trouble
