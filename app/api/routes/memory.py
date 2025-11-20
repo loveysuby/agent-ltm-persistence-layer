@@ -40,7 +40,7 @@ async def search_memories(
     )
 
 
-@router.post("/", description="새 메모리 생성")
+@router.post("", description="새 메모리 생성")
 async def create_memory(
     user_id: str,
     schema_type: str,
@@ -56,7 +56,7 @@ async def create_memory(
     return Response(success=True, data=result)
 
 
-@router.get("/", description="사용자의 모든 메모리 조회")
+@router.get("", description="사용자의 모든 메모리 조회")
 async def get_all_memories(
     user_id: str,
     schema_type: str | None = None,

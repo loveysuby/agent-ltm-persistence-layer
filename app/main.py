@@ -5,6 +5,9 @@ from fastapi.responses import JSONResponse
 from app.api.routes import memory
 from app.api.schemas import APIResponse, ErrorResponse
 from app.config.lifespan import lifespan
+from app.config.logging_config import setup_logging
+
+setup_logging()
 
 app = FastAPI(
     title="Agent Long-term Memory API",
